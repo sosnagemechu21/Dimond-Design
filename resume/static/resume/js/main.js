@@ -11,6 +11,8 @@ document.addEventListener('DOMContentLoaded', () => {
     initSmoothScroll();
     initFormModal();
     initQuestionnaireForms();
+    initMobileNav();
+    initMobileDock();
 });
 
 /* ==========================================================================
@@ -33,15 +35,18 @@ function init3DOrbit() {
     let dragVelocity = 0;
     let isHovered = false;
 
-    // Radius of orbit
+    // Radius of orbit (adaptive for all screen sizes)
     let radiusX = 320;
     let radiusY = 140;
 
     function updateRadii() {
         const width = window.innerWidth;
-        if (width < 600) {
-            radiusX = 140;
-            radiusY = 70;
+        if (width < 450) {
+            radiusX = Math.min(130, Math.round(width * 0.35));
+            radiusY = 55;
+        } else if (width < 650) {
+            radiusX = 160;
+            radiusY = 75;
         } else if (width < 1024) {
             radiusX = 240;
             radiusY = 100;
@@ -92,14 +97,16 @@ function init3DOrbit() {
         requestAnimationFrame(renderOrbit);
     }
 
-    // Pointer events for drag-to-spin
+    // Touch & Pointer events for drag-to-spin with phone gesture handling
     stage.addEventListener('pointerdown', (e) => {
         isDragging = true;
         startX = e.clientX;
         previousX = e.clientX;
         lastDragTime = performance.now();
         dragVelocity = 0;
-        stage.setPointerCapture(e.pointerId);
+        try {
+            stage.setPointerCapture(e.pointerId);
+        } catch (err) {}
     });
 
     stage.addEventListener('pointermove', (e) => {
@@ -108,10 +115,10 @@ function init3DOrbit() {
         const deltaX = e.clientX - previousX;
         const deltaTime = Math.max(now - lastDragTime, 16);
 
-        // Convert delta pixels to radian angle
-        const sensitivity = 0.0055;
+        // Convert delta pixels to radian angle (more responsive on mobile)
+        const sensitivity = window.innerWidth < 600 ? 0.0075 : 0.0055;
         currentAngle += deltaX * sensitivity;
-        dragVelocity = (deltaX / deltaTime) * 0.05;
+        dragVelocity = (deltaX / deltaTime) * (window.innerWidth < 600 ? 0.07 : 0.05);
 
         previousX = e.clientX;
         lastDragTime = now;
@@ -128,13 +135,36 @@ function init3DOrbit() {
     stage.addEventListener('pointerup', endDrag);
     stage.addEventListener('pointercancel', endDrag);
 
-    // Pause idle rotation when hovering an orbital item
+    // Pause idle rotation when hovering or tap interaction on phone
     items.forEach((item) => {
         item.addEventListener('mouseenter', () => (isHovered = true));
         item.addEventListener('mouseleave', () => (isHovered = false));
+
+        // Tactile touch tap on mobile phone
+        item.addEventListener('click', (e) => {
+            const badge = item.querySelector('.token-badge, .token-mini, .token-pill span:last-child');
+            const label = badge ? badge.textContent.trim() : 'Diamond 3D';
+            showOrbitToast(label);
+            // Gentle spin nudge
+            dragVelocity = 0.03;
+        });
     });
 
     renderOrbit();
+}
+
+let toastTimer = null;
+function showOrbitToast(text) {
+    const toast = document.getElementById('mobile-orbit-toast');
+    const toastText = document.getElementById('mobile-toast-text');
+    if (!toast || !toastText) return;
+
+    toastText.textContent = text;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => {
+        toast.classList.remove('show');
+    }, 2200);
 }
 
 /* ==========================================================================
@@ -361,8 +391,28 @@ function initFormModal() {
         });
     });
 
-    if (closeBtn) closeBtn.addEventListener('click', closeModal);
     if (backdrop) backdrop.addEventListener('click', closeModal);
+
+    // Mobile touch swipe-down to dismiss modal
+    let touchStartY = 0;
+    const modalBody = modal.querySelector('.form-modal-body');
+    const modalHeader = modal.querySelector('.form-modal-header');
+
+    if (modalHeader) {
+        modalHeader.addEventListener('touchstart', (e) => {
+            touchStartY = e.touches[0].clientY;
+        }, { passive: true });
+
+        modalHeader.addEventListener('touchmove', (e) => {
+            if (touchStartY > 0) {
+                const diff = e.touches[0].clientY - touchStartY;
+                if (diff > 70) {
+                    closeModal();
+                    touchStartY = 0;
+                }
+            }
+        }, { passive: true });
+    }
 
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape' && modal.classList.contains('active')) {
@@ -535,4 +585,111 @@ function initQuestionnaireForms() {
         }
     }
 }
+
+/* ==========================================================================
+   8. MOBILE PHONE NAVIGATION DRAWER
+   ========================================================================== */
+function initMobileNav() {
+    const toggle = document.getElementById('mobile-menu-toggle');
+    const drawer = document.getElementById('mobile-nav-drawer');
+    const closeBtn = document.getElementById('mobile-drawer-close');
+    const backdrop = document.getElementById('mobile-drawer-backdrop');
+    if (!toggle || !drawer) return;
+
+    function openDrawer() {
+        drawer.classList.add('active');
+        toggle.classList.add('active');
+        toggle.setAttribute('aria-expanded', 'true');
+        drawer.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeDrawer() {
+        drawer.classList.remove('active');
+        toggle.classList.remove('active');
+        toggle.setAttribute('aria-expanded', 'false');
+        drawer.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+    }
+
+    toggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (drawer.classList.contains('active')) {
+            closeDrawer();
+        } else {
+            openDrawer();
+        }
+    });
+
+    if (closeBtn) closeBtn.addEventListener('click', closeDrawer);
+    if (backdrop) backdrop.addEventListener('click', closeDrawer);
+
+    // Close when tapping any navigation link and scroll smoothly
+    drawer.querySelectorAll('.mobile-nav-link').forEach((link) => {
+        link.addEventListener('click', (e) => {
+            const href = link.getAttribute('href');
+            closeDrawer();
+
+            if (href && href.startsWith('#')) {
+                e.preventDefault();
+                const target = document.querySelector(href);
+                if (target) {
+                    const headerOffset = 65;
+                    const elementPosition = target.getBoundingClientRect().top;
+                    const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+                    window.scrollTo({
+                        top: offsetPosition,
+                        behavior: 'smooth',
+                    });
+                }
+            }
+        });
+    });
+
+    // Close when tapping CTA button in drawer
+    drawer.querySelectorAll('.mobile-drawer-cta').forEach((btn) => {
+        btn.addEventListener('click', () => {
+            closeDrawer();
+        });
+    });
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && drawer.classList.contains('active')) {
+            closeDrawer();
+        }
+    });
+}
+
+/* ==========================================================================
+   9. MOBILE FLOATING ACTION DOCK
+   ========================================================================== */
+function initMobileDock() {
+    const dock = document.getElementById('mobile-bottom-dock');
+    if (!dock) return;
+
+    let lastScrollY = window.pageYOffset;
+    let isHidden = false;
+
+    window.addEventListener('scroll', () => {
+        const currentScrollY = window.pageYOffset;
+        const diff = currentScrollY - lastScrollY;
+
+        // Hide when scrolling down quickly, reappear on scroll up or top of page
+        if (diff > 14 && currentScrollY > 180) {
+            if (!isHidden) {
+                dock.classList.add('dock-hidden');
+                isHidden = true;
+            }
+        } else if (diff < -8 || currentScrollY < 100) {
+            if (isHidden) {
+                dock.classList.remove('dock-hidden');
+                isHidden = false;
+            }
+        }
+
+        lastScrollY = currentScrollY;
+    }, { passive: true });
+}
+
 
