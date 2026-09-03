@@ -432,12 +432,10 @@
                     <span class="dot dot-green"></span>
                 </div>
                 <div class="frame-card-title">Diamond Design · Discovery Questionnaire</div>
-                <button type="button" class="open-form-modal frame-expand-btn">Expand Fullscreen ⛶</button>
+                <div class="frame-card-badge">✦ Django Connected · 48h SLA</div>
             </div>
             <div class="frame-card-body">
-                <iframe src="{{ profile.embedded_form_url }}" width="100%" height="820" frameborder="0" marginheight="0" marginwidth="0">
-                    Loading questionnaire…
-                </iframe>
+                {% include 'resume/questionnaire_form.html' with form_id="onpage-questionnaire-form" form_prefix="onpage" %}
             </div>
         </div>
     </div>

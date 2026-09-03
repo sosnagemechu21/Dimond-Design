@@ -33,7 +33,8 @@ class Command(BaseCommand):
             whatsapp_display="0984 670 908",
             instagram_handle="@dymndesign12",
             instagram_url="https://instagram.com/dymndesign12",
-            booking_form_url="https://forms.gle/26gcuX89RtAGZ1wW9",
+            booking_form_url="",
+            embedded_form_url="",
             email="dymndesign12@gmail.com",
             portrait_image="resume/img/portrait.png"
         )

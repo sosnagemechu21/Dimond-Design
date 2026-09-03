@@ -1,0 +1,183 @@
+<form id="{{ form_id }}" class="brand-questionnaire-form" method="POST" action="{% url 'resume:questionnaire_submit' %}">
+    {% csrf_token %}
+
+    <!-- Step 1: Founder & Brand Foundation -->
+    <div class="q-block">
+        <div class="q-block-header">
+            <div class="q-step-badge">01</div>
+            <div>
+                <h4 class="q-block-title">Founder & Brand Foundation</h4>
+                <p class="q-block-subtitle">Basic details to initiate your project brief and workspace</p>
+            </div>
+        </div>
+
+        <div class="q-grid-2">
+            <div class="q-field">
+                <label for="{{ form_prefix }}_full_name">Your Full Name <span class="q-req">*</span></label>
+                <input type="text" id="{{ form_prefix }}_full_name" name="full_name" placeholder="e.g. Dagim Tefera" required autocomplete="name">
+            </div>
+            <div class="q-field">
+                <label for="{{ form_prefix }}_email">Email Address <span class="q-req">*</span></label>
+                <input type="email" id="{{ form_prefix }}_email" name="email" placeholder="e.g. founder@company.com" required autocomplete="email">
+            </div>
+        </div>
+
+        <div class="q-grid-2">
+            <div class="q-field">
+                <label for="{{ form_prefix }}_phone_or_whatsapp">WhatsApp / Phone Number</label>
+                <input type="tel" id="{{ form_prefix }}_phone_or_whatsapp" name="phone_or_whatsapp" placeholder="e.g. +251 984 670 908" autocomplete="tel">
+            </div>
+            <div class="q-field">
+                <label for="{{ form_prefix }}_brand_name">Brand or Business Name <span class="q-req">*</span></label>
+                <input type="text" id="{{ form_prefix }}_brand_name" name="brand_name" placeholder="e.g. Kalu Putics / Merha Trading" required>
+            </div>
+        </div>
+
+        <div class="q-grid-2">
+            <div class="q-field">
+                <label for="{{ form_prefix }}_industry">Industry or Niche</label>
+                <select id="{{ form_prefix }}_industry" name="industry">
+                    <option value="">Select an industry...</option>
+                    <option value="Fashion & Apparel / Streetwear">Fashion & Apparel / Streetwear</option>
+                    <option value="Tech, AI & SaaS">Tech, AI & SaaS</option>
+                    <option value="Cafe, Food & Hospitality">Cafe, Food & Hospitality</option>
+                    <option value="Retail, Boutique & E-Commerce">Retail, Boutique & E-Commerce</option>
+                    <option value="Corporate, Logistics & Trading">Corporate, Logistics & Trading</option>
+                    <option value="Health, Fitness & Wellness">Health, Fitness & Wellness</option>
+                    <option value="Personal Brand & Creator">Personal Brand & Creator</option>
+                    <option value="Other Industry">Other Industry</option>
+                </select>
+            </div>
+            <div class="q-field">
+                <label for="{{ form_prefix }}_brand_stage">Current Stage</label>
+                <select id="{{ form_prefix }}_brand_stage" name="brand_stage">
+                    <option value="Starting from Scratch (Brand New)">Starting from Scratch (Brand New Venture)</option>
+                    <option value="Rebranding Existing Business">Rebranding / Elevating an Existing Brand</option>
+                    <option value="Adding Social & Marketing Assets">Adding Social Media Posters & Brand Assets</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Step 2: Visual Tone & Aesthetic Direction -->
+    <div class="q-block">
+        <div class="q-block-header">
+            <div class="q-step-badge">02</div>
+            <div>
+                <h4 class="q-block-title">Visual Tone & Aesthetic Direction</h4>
+                <p class="q-block-subtitle">Select the aesthetic keywords that match your dream brand look & feel</p>
+            </div>
+        </div>
+
+        <div class="q-field">
+            <label>Brand Aesthetic & Style <span class="q-helper">(Click to select all that apply)</span></label>
+            <div class="q-chips-container" data-target="{{ form_prefix }}_brand_vibe">
+                <button type="button" class="q-chip" data-val="Minimalist & Clean">✦ Minimalist & Clean</button>
+                <button type="button" class="q-chip" data-val="Bold & Edgy">✦ Bold & Edgy</button>
+                <button type="button" class="q-chip" data-val="Dark Luxury & Premium">✦ Dark Luxury & Premium</button>
+                <button type="button" class="q-chip" data-val="Modern Tech & Geometric">✦ Modern Tech & Geometric</button>
+                <button type="button" class="q-chip" data-val="High Fashion & Editorial">✦ High Fashion & Editorial</button>
+                <button type="button" class="q-chip" data-val="Vibrant & Youthful">✦ Vibrant & Youthful</button>
+                <button type="button" class="q-chip" data-val="Earthy & Organic">✦ Earthy & Organic</button>
+                <button type="button" class="q-chip" data-val="Heritage & Timeless">✦ Heritage & Timeless</button>
+            </div>
+            <input type="hidden" id="{{ form_prefix }}_brand_vibe" name="brand_vibe" value="">
+        </div>
+
+        <div class="q-grid-2">
+            <div class="q-field">
+                <label for="{{ form_prefix }}_color_preferences">Color Preferences & Tones</label>
+                <input type="text" id="{{ form_prefix }}_color_preferences" name="color_preferences" placeholder="e.g. Matte black, slate silver, cyan accent (no neon green)">
+            </div>
+            <div class="q-field">
+                <label for="{{ form_prefix }}_target_audience">Target Audience / Demographic</label>
+                <input type="text" id="{{ form_prefix }}_target_audience" name="target_audience" placeholder="e.g. Modern founders, urban youth 20–35, high-end shoppers">
+            </div>
+        </div>
+    </div>
+
+    <!-- Step 3: Scope & Launch Timeline -->
+    <div class="q-block">
+        <div class="q-block-header">
+            <div class="q-step-badge">03</div>
+            <div>
+                <h4 class="q-block-title">Scope of Services & Timeline</h4>
+                <p class="q-block-subtitle">Choose the package deliverables that your business requires</p>
+            </div>
+        </div>
+
+        <div class="q-field">
+            <label>Selected Services <span class="q-helper">(Click to select one or multiple)</span></label>
+            <div class="q-package-grid" data-target="{{ form_prefix }}_services_selected">
+                <div class="q-package-card selected" data-val="48-Hour Signature Brand Board">
+                    <div class="q-pkg-top">
+                        <span class="q-pkg-tag">Signature Turnaround</span>
+                        <span class="q-pkg-check">✓</span>
+                    </div>
+                    <h5 class="q-pkg-name">48-Hour Brand Board</h5>
+                    <p class="q-pkg-desc">10 essential deliverables in 48h: Logo suite, color hierarchy, typography pairing, editable vectors & board PDF.</p>
+                </div>
+
+                <div class="q-package-card" data-val="Full Brand Identity & Monogram Architecture">
+                    <div class="q-pkg-top">
+                        <span class="q-pkg-tag">Comprehensive</span>
+                        <span class="q-pkg-check">✓</span>
+                    </div>
+                    <h5 class="q-pkg-name">Full Identity System</h5>
+                    <p class="q-pkg-desc">Primary/secondary marks, monograms, brand guidelines, stationery system and export-ready vectors.</p>
+                </div>
+
+                <div class="q-package-card" data-val="Social Media Posters & Campaign Creatives">
+                    <div class="q-pkg-top">
+                        <span class="q-pkg-tag">Marketing</span>
+                        <span class="q-pkg-check">✓</span>
+                    </div>
+                    <h5 class="q-pkg-name">Social Media Creatives</h5>
+                    <p class="q-pkg-desc">High-impact single-post designs, product launch carousels, and consistent Instagram/TikTok brand visuals.</p>
+                </div>
+
+                <div class="q-package-card" data-val="Merchandise, Apparel & Packaging Mockups">
+                    <div class="q-pkg-top">
+                        <span class="q-pkg-tag">Tangible Assets</span>
+                        <span class="q-pkg-check">✓</span>
+                    </div>
+                    <h5 class="q-pkg-name">Merch & Packaging</h5>
+                    <p class="q-pkg-desc">Photorealistic cap mockups, garment embroidery patches, business cards print prepress, and packaging tags.</p>
+                </div>
+            </div>
+            <input type="hidden" id="{{ form_prefix }}_services_selected" name="services_selected" value="48-Hour Signature Brand Board">
+        </div>
+
+        <div class="q-grid-2">
+            <div class="q-field">
+                <label for="{{ form_prefix }}_timeline">Target Delivery Timeline</label>
+                <select id="{{ form_prefix }}_timeline" name="timeline">
+                    <option value="48-Hour Signature Sprint">⚡ 48-Hour Signature Sprint (Fast Track)</option>
+                    <option value="Within 1 Week">Within 1 Week</option>
+                    <option value="Within 2-3 Weeks">Within 2–3 Weeks</option>
+                    <option value="Flexible / Next Month">Flexible / Planning for next month</option>
+                </select>
+            </div>
+            <div class="q-field">
+                <label for="{{ form_prefix }}_project_description">Project Story & Reference Links</label>
+                <textarea id="{{ form_prefix }}_project_description" name="project_description" rows="3" placeholder="Tell us what makes your brand unique, paste moodboards or competitor references..."></textarea>
+            </div>
+        </div>
+    </div>
+
+    <!-- Submit Action Row -->
+    <div class="q-actions-row">
+        <button type="submit" class="btn-pill-gradient btn-lg q-submit-btn">
+            <span class="q-btn-text">Submit Discovery Brief ✦ Lock 48h Slot</span>
+            <span class="q-btn-spinner spinner-hidden">● ● ●</span>
+        </button>
+        <div class="q-security-badge">
+            <span class="q-badge-item">🔒 Direct to Django DB</span>
+            <span class="q-badge-item">✦ 100% Vector Quality</span>
+            <span class="q-badge-item">⚡ 24h Response Guarantee</span>
+        </div>
+    </div>
+
+    <!-- Success & Error Alert Area -->
+    <div class="q-feedback-box" style="display: none;"></div>
+</form>

@@ -6,7 +6,8 @@ from .models import (
     PosterDesign,
     BrandBoardDeliverable,
     WorkStep,
-    ContactMessage
+    ContactMessage,
+    BrandingQuestionnaire
 )
 
 @admin.register(Profile)
@@ -45,3 +46,23 @@ class ContactMessageAdmin(admin.ModelAdmin):
     list_display = ('name', 'email', 'service_needed', 'created_at', 'is_read')
     list_filter = ('is_read', 'created_at')
     search_fields = ('name', 'email', 'message')
+
+@admin.register(BrandingQuestionnaire)
+class BrandingQuestionnaireAdmin(admin.ModelAdmin):
+    list_display = ('brand_name', 'full_name', 'email', 'phone_or_whatsapp', 'industry', 'timeline', 'status', 'created_at')
+    list_filter = ('status', 'timeline', 'brand_stage', 'created_at')
+    search_fields = ('brand_name', 'full_name', 'email', 'phone_or_whatsapp', 'industry', 'project_description')
+    list_editable = ('status',)
+    readonly_fields = ('created_at',)
+    fieldsets = (
+        ("Founder & Brand Info", {
+            'fields': ('full_name', 'email', 'phone_or_whatsapp', 'brand_name', 'industry', 'brand_stage')
+        }),
+        ("Design Preferences & Direction", {
+            'fields': ('services_selected', 'brand_vibe', 'color_preferences', 'target_audience')
+        }),
+        ("Timeline & Project Scope", {
+            'fields': ('timeline', 'project_description', 'status', 'created_at')
+        }),
+    )
+

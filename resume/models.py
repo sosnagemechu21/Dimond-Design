@@ -27,10 +27,8 @@ class Profile(models.Model):
     whatsapp_display = models.CharField(max_length=50, default="0984 670 908")
     instagram_handle = models.CharField(max_length=100, default="@dymndesign12")
     instagram_url = models.URLField(default="https://instagram.com/dymndesign12")
-    booking_form_url = models.URLField(default="https://forms.gle/26gcuX89RtAGZ1wW9")
-    embedded_form_url = models.URLField(
-        default="https://docs.google.com/forms/d/e/1FAIpQLSel3Gfp5Bq29vwn1Vg5tbeQdsRddLDmlab8YmEWxDkH-5szPw/viewform?embedded=true"
-    )
+    booking_form_url = models.URLField(blank=True, default="")
+    embedded_form_url = models.URLField(blank=True, default="")
     email = models.EmailField(default="dymndesign12@gmail.com")
     portrait_image = models.CharField(max_length=255, default="resume/img/portrait.png")
 
@@ -131,3 +129,35 @@ class ContactMessage(models.Model):
 
     def __str__(self):
         return f"Message from {self.name} ({self.email})"
+
+
+class BrandingQuestionnaire(models.Model):
+    STATUS_CHOICES = [
+        ('new', 'New Brief'),
+        ('reviewed', 'Reviewed'),
+        ('in_progress', 'In Progress'),
+        ('completed', 'Completed'),
+    ]
+
+    full_name = models.CharField(max_length=120)
+    email = models.EmailField()
+    phone_or_whatsapp = models.CharField(max_length=50, blank=True)
+    brand_name = models.CharField(max_length=150)
+    industry = models.CharField(max_length=120, blank=True)
+    brand_stage = models.CharField(max_length=100, blank=True)
+    services_selected = models.TextField(blank=True, help_text="Comma-separated selected services")
+    brand_vibe = models.CharField(max_length=255, blank=True, help_text="Aesthetic style keywords")
+    color_preferences = models.CharField(max_length=255, blank=True)
+    target_audience = models.TextField(blank=True)
+    timeline = models.CharField(max_length=100, blank=True)
+    project_description = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(max_length=30, default='new', choices=STATUS_CHOICES)
+
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = "Branding Discovery Questionnaire"
+        verbose_name_plural = "Branding Discovery Questionnaires"
+
+    def __str__(self):
+        return f"{self.brand_name} ({self.full_name}) - {self.created_at.strftime('%Y-%m-%d')}"

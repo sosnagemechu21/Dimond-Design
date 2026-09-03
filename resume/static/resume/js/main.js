@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initContactForm();
     initSmoothScroll();
     initFormModal();
+    initQuestionnaireForms();
 });
 
 /* ==========================================================================
@@ -335,7 +336,7 @@ function initSmoothScroll() {
 }
 
 /* ==========================================================================
-   6. EMBEDDED GOOGLE FORM MODAL
+   6. BRANDING DISCOVERY BRIEF MODAL
    ========================================================================== */
 function initFormModal() {
     const modal = document.getElementById('form-modal');
@@ -368,5 +369,170 @@ function initFormModal() {
             closeModal();
         }
     });
+}
+
+/* ==========================================================================
+   7. NATIVE BRANDING DISCOVERY QUESTIONNAIRE ENGINE
+   ========================================================================== */
+function initQuestionnaireForms() {
+    const forms = document.querySelectorAll('.brand-questionnaire-form');
+    if (forms.length === 0) return;
+
+    forms.forEach((form) => {
+        // 1. Interactive Aesthetic Chips
+        const chipContainers = form.querySelectorAll('.q-chips-container');
+        chipContainers.forEach((container) => {
+            const targetInputId = container.dataset.target;
+            const targetInput = form.querySelector(`#${targetInputId}`);
+            const chips = container.querySelectorAll('.q-chip');
+
+            chips.forEach((chip) => {
+                chip.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    chip.classList.toggle('active');
+
+                    // Collect all active chip values
+                    const activeValues = Array.from(container.querySelectorAll('.q-chip.active'))
+                        .map((c) => c.dataset.val);
+
+                    if (targetInput) {
+                        targetInput.value = activeValues.join(', ');
+                    }
+                });
+            });
+        });
+
+        // 2. Interactive Package Cards
+        const pkgContainers = form.querySelectorAll('.q-package-grid');
+        pkgContainers.forEach((container) => {
+            const targetInputId = container.dataset.target;
+            const targetInput = form.querySelector(`#${targetInputId}`);
+            const cards = container.querySelectorAll('.q-package-card');
+
+            cards.forEach((card) => {
+                card.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    card.classList.toggle('selected');
+
+                    const selectedValues = Array.from(container.querySelectorAll('.q-package-card.selected'))
+                        .map((c) => c.dataset.val);
+
+                    if (targetInput) {
+                        targetInput.value = selectedValues.join(', ');
+                    }
+                });
+            });
+        });
+
+        // 3. Form Submission Handling
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const feedbackBox = form.querySelector('.q-feedback-box');
+            const submitBtn = form.querySelector('.q-submit-btn');
+            const btnText = form.querySelector('.q-btn-text');
+            const btnSpinner = form.querySelector('.q-btn-spinner');
+            const csrfToken = form.querySelector('[name=csrfmiddlewaretoken]')?.value;
+
+            // Extract all form data
+            const formData = new FormData(form);
+            const payload = {};
+            formData.forEach((value, key) => {
+                payload[key] = value;
+            });
+
+            // Basic validation
+            if (!payload.full_name || !payload.email || !payload.brand_name) {
+                showQuestionnaireFeedback(form, 'Please fill in all required fields (Name, Email, and Brand Name).', 'error');
+                return;
+            }
+
+            // Submit loading state
+            if (submitBtn) submitBtn.disabled = true;
+            if (btnText) btnText.style.display = 'none';
+            if (btnSpinner) btnSpinner.style.display = 'inline-block';
+            if (feedbackBox) feedbackBox.style.display = 'none';
+
+            try {
+                const response = await fetch('/questionnaire/submit/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrfToken,
+                    },
+                    body: JSON.stringify(payload),
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.status === 'success') {
+                    renderQuestionnaireSuccess(form, result);
+                } else {
+                    showQuestionnaireFeedback(form, result.message || 'Unable to submit brief. Please check your inputs.', 'error');
+                }
+            } catch (err) {
+                showQuestionnaireFeedback(form, 'Network connection issue. You can also chat directly with Dagim on WhatsApp!', 'error');
+            } finally {
+                if (submitBtn) submitBtn.disabled = false;
+                if (btnText) btnText.style.display = 'inline-block';
+                if (btnSpinner) btnSpinner.style.display = 'none';
+            }
+        });
+    });
+
+    function showQuestionnaireFeedback(form, message, type) {
+        const box = form.querySelector('.q-feedback-box');
+        if (!box) return;
+        box.className = `q-feedback-box ${type}`;
+        box.innerHTML = `<p>${message}</p>`;
+        box.style.display = 'block';
+        box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function renderQuestionnaireSuccess(form, result) {
+        const box = form.querySelector('.q-feedback-box');
+        if (!box) return;
+
+        // Hide form input blocks and action buttons
+        const blocks = form.querySelectorAll('.q-block, .q-actions-row');
+        blocks.forEach((el) => (el.style.display = 'none'));
+
+        box.className = 'q-feedback-box success';
+        box.innerHTML = `
+            <div class="q-success-inner">
+                <div class="q-success-icon">✦</div>
+                <h3 class="q-success-title">Discovery Brief Received!</h3>
+                <p class="q-success-msg">${result.message}</p>
+                <div class="q-success-actions">
+                    <a href="${result.whatsapp_link}" target="_blank" rel="noopener noreferrer" class="btn-whatsapp-direct">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M13.832 16.568a1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233 14 14 0 0 0 6.392 6.384"></path>
+                        </svg>
+                        <span>Notify Dagim on WhatsApp Now</span>
+                    </a>
+                    <button type="button" class="btn-outline-pill btn-md btn-reset-brief">
+                        <span>Submit Another Brief</span>
+                    </button>
+                </div>
+            </div>
+        `;
+        box.style.display = 'block';
+        box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+        // Wire reset button
+        const resetBtn = box.querySelector('.btn-reset-brief');
+        if (resetBtn) {
+            resetBtn.addEventListener('click', () => {
+                form.reset();
+                // Reset chip & package active states
+                form.querySelectorAll('.q-chip.active').forEach((c) => c.classList.remove('active'));
+                form.querySelectorAll('.q-package-card.selected').forEach((c, idx) => {
+                    if (idx !== 0) c.classList.remove('selected');
+                });
+                blocks.forEach((el) => (el.style.display = ''));
+                box.style.display = 'none';
+            });
+        }
+    }
 }
 

@@ -90,7 +90,7 @@
         </div>
     </footer>
 
-    <!-- Interactive Embedded Google Form Modal -->
+    <!-- Interactive Native Branding Discovery Questionnaire Modal -->
     <div id="form-modal" class="form-modal" aria-hidden="true">
         <div class="form-modal-backdrop"></div>
         <div class="form-modal-container">
@@ -98,27 +98,19 @@
                 <div class="form-modal-title">
                     <span class="diamond-icon">✦</span>
                     <div>
-                        <h3>Branding Discovery Questionnaire</h3>
-                        <p class="form-modal-subtitle">Fill out your project details below — delivered in 48 hours.</p>
+                        <h3>Branding Discovery Brief</h3>
+                        <p class="form-modal-subtitle">Submit your vision directly to Dagim — 48-hour signature turnaround.</p>
                     </div>
                 </div>
                 <div class="form-modal-actions">
-                    <a href="{{ profile.booking_form_url }}" target="_blank" rel="noopener noreferrer" class="form-external-link" title="Open in new tab">
-                        <span>External Tab ↗</span>
+                    <a href="https://wa.me/{{ profile.whatsapp_number|cut:'+'|cut:' ' }}" target="_blank" rel="noopener noreferrer" class="form-external-link" title="Chat directly on WhatsApp">
+                        <span>WhatsApp Quick Chat ↗</span>
                     </a>
                     <button type="button" id="form-modal-close" class="form-modal-close" aria-label="Close Questionnaire">&times;</button>
                 </div>
             </div>
             <div class="form-modal-body">
-                <iframe id="google-form-iframe" 
-                        src="{{ profile.embedded_form_url }}" 
-                        width="100%" 
-                        height="100%" 
-                        frameborder="0" 
-                        marginheight="0" 
-                        marginwidth="0">
-                    Loading questionnaire…
-                </iframe>
+                {% include 'resume/questionnaire_form.html' with form_id="modal-questionnaire-form" form_prefix="modal" %}
             </div>
         </div>
     </div>
