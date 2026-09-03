@@ -1,0 +1,556 @@
+{% extends 'resume/base.html' %}
+{% load static %}
+
+{% block content %}
+<!-- ============================================ -->
+<!-- 1. HERO SECTION                              -->
+<!-- ============================================ -->
+<section id="hero" class="hero-section select-none">
+    <!-- Hero Ambient Canvas -->
+    <div class="hero-bg-gradient" aria-hidden="true"></div>
+    <div class="hero-vignette" aria-hidden="true"></div>
+
+    <!-- Giant Title Typography Behind Center Piece -->
+    <div class="hero-title-container">
+        <h1 class="hero-giant-heading">{{ profile.hero_headline }}</h1>
+    </div>
+
+    <!-- Interactive 3D Orbital Canvas (Drag to Spin) -->
+    <div class="hero-orbit-stage" id="orbit-stage">
+        <div class="orbit-center" id="orbit-center">
+            <!-- 3D Orbital Items -->
+            <div class="orbit-item item-diamond" data-depth="1.2" data-angle="0">
+                <div class="orbit-token">
+                    <svg class="token-svg" viewBox="0 0 100 100" fill="none">
+                        <polygon points="50,5 95,35 75,95 25,95 5,35" fill="url(#dia-grad)" stroke="#00F0FF" stroke-width="2"/>
+                        <polyline points="5,35 50,45 95,35" stroke="#ffffff" stroke-width="1.5" opacity="0.6"/>
+                        <line x1="50" y1="45" x2="50" y2="95" stroke="#ffffff" stroke-width="1.5" opacity="0.6"/>
+                        <polyline points="25,95 50,45 75,95" stroke="#ffffff" stroke-width="1.5" opacity="0.6"/>
+                        <line x1="50" y1="5" x2="50" y2="45" stroke="#ffffff" stroke-width="2"/>
+                        <line x1="50" y1="5" x2="25" y2="35" stroke="#ffffff" stroke-width="1.5" opacity="0.6"/>
+                        <line x1="50" y1="5" x2="75" y2="35" stroke="#ffffff" stroke-width="1.5" opacity="0.6"/>
+                        <defs>
+                            <linearGradient id="dia-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#00F0FF" stop-opacity="0.8"/>
+                                <stop offset="50%" stop-color="#374151" stop-opacity="0.7"/>
+                                <stop offset="100%" stop-color="#1F2937" stop-opacity="0.9"/>
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                    <span class="token-badge">Diamond 3D</span>
+                </div>
+            </div>
+
+            <div class="orbit-item item-brandmark" data-depth="0.9" data-angle="60">
+                <div class="orbit-token">
+                    <div class="token-circle bg-purple">
+                        <span class="token-icon">✦</span>
+                    </div>
+                    <span class="token-badge">Brand Identity</span>
+                </div>
+            </div>
+
+            <div class="orbit-item item-48h" data-depth="0.7" data-angle="120">
+                <div class="orbit-token">
+                    <div class="token-pill bg-cyan">
+                        <span class="pulse-dot"></span>
+                        <span>48h SLA</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="orbit-item item-vector" data-depth="0.5" data-angle="180">
+                <div class="orbit-token">
+                    <div class="token-circle bg-amber">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 19 7-7 3 3-7 7-3-3z"></path><path d="m18 13-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path><path d="m2 2 7.586 7.586"></path><circle cx="11" cy="11" r="2"></circle></svg>
+                    </div>
+                    <span class="token-badge">Vector Ai/SVG</span>
+                </div>
+            </div>
+
+            <div class="orbit-item item-typo" data-depth="0.8" data-angle="240">
+                <div class="orbit-token">
+                    <div class="token-square bg-grey">
+                        <span class="token-letter">Aa</span>
+                    </div>
+                    <span class="token-badge">Typography</span>
+                </div>
+            </div>
+
+            <div class="orbit-item item-board" data-depth="1.0" data-angle="300">
+                <div class="orbit-token">
+                    <div class="token-card bg-dark-glass">
+                        <span class="token-mini">BrandBoard</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Central Studio Portrait -->
+        <div class="hero-portrait-wrap">
+            <img src="{% static profile.portrait_image %}" alt="{{ profile.name }} portrait" class="hero-portrait" draggable="false">
+        </div>
+    </div>
+
+    <!-- Hero Bottom Bar -->
+    <div class="hero-bottom-bar">
+        <div class="hero-tagline-col">
+            <p class="hero-tagline">{{ profile.hero_subtext }}</p>
+        </div>
+
+        <div class="hero-spin-hint">
+            <span class="spin-text">DRAG TO SPIN ✦ INTERACTIVE</span>
+        </div>
+
+        <div class="hero-cta-col">
+            <a href="#contact" class="btn-pill-gradient btn-lg">
+                <span>Contact Me</span>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================ -->
+<!-- 2. DUAL INFINITE MARQUEE TICKER             -->
+<!-- ============================================ -->
+<section class="marquee-section select-none" aria-hidden="true">
+    <!-- Row 1: Brand Works & Logos -->
+    <div class="marquee-wrapper marquee-left">
+        <div class="marquee-track">
+            {% for proj in projects %}
+            <div class="marquee-card">
+                <img src="{% static proj.main_image %}" alt="{{ proj.title }}">
+                <div class="marquee-card-meta">
+                    <span class="marquee-tag">{{ proj.category }}</span>
+                    <span class="marquee-title">{{ proj.title }}</span>
+                </div>
+            </div>
+            {% endfor %}
+            {% for poster in posters %}
+            <div class="marquee-card">
+                <img src="{% static poster.image %}" alt="{{ poster.brand }}">
+                <div class="marquee-card-meta">
+                    <span class="marquee-tag">{{ poster.category }}</span>
+                    <span class="marquee-title">{{ poster.brand }}</span>
+                </div>
+            </div>
+            {% endfor %}
+            <!-- Duplicate for seamless loop -->
+            {% for proj in projects %}
+            <div class="marquee-card">
+                <img src="{% static proj.main_image %}" alt="{{ proj.title }}">
+                <div class="marquee-card-meta">
+                    <span class="marquee-tag">{{ proj.category }}</span>
+                    <span class="marquee-title">{{ proj.title }}</span>
+                </div>
+            </div>
+            {% endfor %}
+            {% for poster in posters %}
+            <div class="marquee-card">
+                <img src="{% static poster.image %}" alt="{{ poster.brand }}">
+                <div class="marquee-card-meta">
+                    <span class="marquee-tag">{{ poster.category }}</span>
+                    <span class="marquee-title">{{ poster.brand }}</span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Row 2: Value Propositions & Keywords -->
+    <div class="marquee-wrapper marquee-right">
+        <div class="marquee-track marquee-text-track">
+            <div class="marquee-text-group">
+                <span>Brand Identity Systems</span><span class="star-accent">✦</span>
+                <span>48-Hour Turnaround</span><span class="star-accent">✦</span>
+                <span>One-Page Brand Board</span><span class="star-accent">✦</span>
+                <span>Social Media Campaigns</span><span class="star-accent">✦</span>
+                <span>Vector Ai · PDF · SVG</span><span class="star-accent">✦</span>
+                <span>Logo Architecture</span><span class="star-accent">✦</span>
+                <span>Printed Business Cards</span><span class="star-accent">✦</span>
+            </div>
+            <div class="marquee-text-group">
+                <span>Brand Identity Systems</span><span class="star-accent">✦</span>
+                <span>48-Hour Turnaround</span><span class="star-accent">✦</span>
+                <span>One-Page Brand Board</span><span class="star-accent">✦</span>
+                <span>Social Media Campaigns</span><span class="star-accent">✦</span>
+                <span>Vector Ai · PDF · SVG</span><span class="star-accent">✦</span>
+                <span>Logo Architecture</span><span class="star-accent">✦</span>
+                <span>Printed Business Cards</span><span class="star-accent">✦</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================ -->
+<!-- 3. ABOUT ME SECTION                          -->
+<!-- ============================================ -->
+<section id="about" class="about-section">
+    <div class="about-ambient" aria-hidden="true">
+        <div class="floating-orb orb-1"></div>
+        <div class="floating-orb orb-2"></div>
+    </div>
+
+    <div class="section-header text-center">
+        <div class="section-label">/ Profile</div>
+        <h2 class="section-giant-heading">About Me</h2>
+    </div>
+
+    <div class="about-content-wrapper">
+        <p class="about-statement">
+            <span class="statement-highlight">I'm Dagim,</span> a brand identity and social media designer behind 
+            <span class="statement-accent">Diamond Design</span>. I help early-stage founders, creators, and ambitious businesses launch with a 
+            <span class="statement-highlight">real, cohesive brand</span> — not a generic template. Every visual identity is delivered on a single, actionable brand board so your team can actually execute with confidence on day one.
+        </p>
+
+        <!-- Dynamic Stat Counters -->
+        <div class="about-metrics-grid">
+            <div class="metric-card">
+                <span class="metric-num">{{ profile.brands_shipped_count }}</span>
+                <span class="metric-label">Brands Shipped</span>
+            </div>
+            <div class="metric-card">
+                <span class="metric-num">{{ profile.delivery_time }}</span>
+                <span class="metric-label">Signature Turnaround</span>
+            </div>
+            <div class="metric-card">
+                <span class="metric-num">{{ profile.satisfaction_rate }}</span>
+                <span class="metric-label">Vector Editable Files</span>
+            </div>
+            <div class="metric-card">
+                <span class="metric-num">5.0★</span>
+                <span class="metric-label">Client Rating</span>
+            </div>
+        </div>
+
+        <div class="about-cta-row">
+            <button type="button" class="btn-pill-gradient btn-md open-form-modal">
+                <span>Reserve Branding Slot</span>
+            </button>
+            <a href="#service-48h" class="btn-outline-pill btn-md">
+                <span>See 48h Process</span>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================ -->
+<!-- 4. EXPERTISE & SERVICES SECTION              -->
+<!-- ============================================ -->
+<section id="expertise" class="expertise-section">
+    <div class="expertise-container">
+        <div class="section-header text-center">
+            <div class="section-label">/ Capabilities</div>
+            <h2 class="section-giant-heading dark-text">Expertise</h2>
+        </div>
+
+        <div class="expertise-list">
+            {% for exp in expertise_list %}
+            <div class="expertise-item">
+                <div class="expertise-num">{{ exp.number }}</div>
+                <div class="expertise-body">
+                    <h3 class="expertise-title">{{ exp.title }}</h3>
+                    <p class="expertise-desc">{{ exp.description }}</p>
+                    <div class="expertise-pills">
+                        {% for skill in exp.skills_list %}
+                        <span class="skill-pill">{{ skill }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- ============================================ -->
+<!-- 5. SIGNATURE STACKING CARDS PROJECTS SHOWCASE -->
+<!-- ============================================ -->
+<section id="projects" class="projects-section">
+    <div class="projects-intro">
+        <div class="section-header text-center">
+            <div class="section-label">/ Selected Work</div>
+            <h2 class="section-giant-heading">Projects</h2>
+        </div>
+    </div>
+
+    <!-- Sticky Deck of Cards Container -->
+    <div class="stacking-cards-container">
+        {% for proj in projects %}
+        <div class="project-sticky-wrapper" style="top: calc(5rem + {{ forloop.counter0 }} * 14px);">
+            <div class="project-card">
+                <!-- Card Header -->
+                <div class="project-card-header">
+                    <div class="project-header-left">
+                        <span class="project-index">{{ proj.number }}</span>
+                        <div class="project-meta-titles">
+                            <span class="project-role">{{ proj.role }}</span>
+                            <h3 class="project-name">{{ proj.title }}</h3>
+                        </div>
+                    </div>
+                    <div class="project-header-right">
+                        {% if proj.live_url %}
+                        <a href="{{ proj.live_url }}" target="_blank" rel="noopener noreferrer" class="btn-outline-pill btn-sm">
+                            <span>Case Study</span>
+                        </a>
+                        {% endif %}
+                        <button type="button" class="btn-pill-gradient btn-sm lightbox-trigger" 
+                                data-img="{% static proj.main_image %}" 
+                                data-title="{{ proj.title }}" 
+                                data-desc="{{ proj.description }}">
+                            <span>Expand View</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Card Content Dual Grid -->
+                <div class="project-card-grid">
+                    <!-- Left Side Detail Thumbnails -->
+                    <div class="project-grid-side">
+                        {% if proj.preview_image_1 %}
+                        <div class="project-thumb-box thumb-top lightbox-trigger"
+                             data-img="{% static proj.preview_image_1 %}"
+                             data-title="{{ proj.title }} — Concept Detail"
+                             data-desc="{{ proj.description }}">
+                            <img src="{% static proj.preview_image_1 %}" alt="{{ proj.title }} preview 1">
+                            <div class="thumb-overlay">
+                                <span>View Detail ✦</span>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        {% if proj.preview_image_2 %}
+                        <div class="project-thumb-box thumb-bottom lightbox-trigger"
+                             data-img="{% static proj.preview_image_2 %}"
+                             data-title="{{ proj.title }} — Mockup Detail"
+                             data-desc="{{ proj.description }}">
+                            <img src="{% static proj.preview_image_2 %}" alt="{{ proj.title }} preview 2">
+                            <div class="thumb-overlay">
+                                <span>View Mockup ✦</span>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Right Side Main Hero Showcase -->
+                    <div class="project-grid-main lightbox-trigger"
+                         data-img="{% static proj.main_image %}"
+                         data-title="{{ proj.title }} — Primary Brand Identity"
+                         data-desc="{{ proj.description }}">
+                        <img src="{% static proj.main_image %}" alt="{{ proj.title }} showcase">
+                        <div class="main-showcase-overlay">
+                            <div class="overlay-text">
+                                <span class="overlay-badge">{{ proj.category }} ({{ proj.year }})</span>
+                                <p class="overlay-desc">{{ proj.description }}</p>
+                            </div>
+                            <span class="overlay-expand-btn">Click to Expand ↗</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<!-- ============================================ -->
+<!-- 6. 48-HOUR SIGNATURE BRANDING SERVICE        -->
+<!-- ============================================ -->
+<section id="service-48h" class="service-section">
+    <div class="service-container">
+        <div class="service-grid">
+            <!-- Left Info Column -->
+            <div class="service-col-info">
+                <div class="section-label text-cyan">/ Signature Service</div>
+                <h2 class="service-heading">48-Hour<br><span class="italic-gradient">Branding.</span></h2>
+                <p class="service-subtext">
+                    Whether you're launching a new venture or elevating an existing business, Diamond Design gives you the essential visual identity to show up with confidence — delivered in 48 hours.
+                </p>
+
+                <div class="service-pricing-box">
+                    <div class="pricing-header">
+                        <span class="pricing-label">Starting from</span>
+                        <span class="deposit-badge">50% Deposit to lock</span>
+                    </div>
+                    <div class="pricing-turnaround">
+                        <span class="big-hours">48h</span>
+                        <span class="hours-label">guaranteed delivery</span>
+                    </div>
+                    <button type="button" class="btn-pill-gradient btn-full open-form-modal">
+                        <span>Reserve Your Slot</span>
+                        <svg class="icon-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 7h10v10"></path><path d="M7 17 17 7"></path></svg>
+                    </button>
+                    <p class="pricing-note">Takes about 5 minutes. Limited slots each week.</p>
+                </div>
+            </div>
+
+            <!-- Right Deliverables & Workflow Column -->
+            <div class="service-col-deliverables">
+                <div class="section-label">/ What's Included (10 Deliverables)</div>
+                <div class="deliverables-grid">
+                    {% for del in deliverables %}
+                    <div class="deliverable-item">
+                        <span class="check-icon">✓</span>
+                        <span class="deliverable-text">{{ del.title }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <div class="workflow-header">
+                    <div class="section-label">/ How It Works (4 Steps)</div>
+                </div>
+                <div class="workflow-grid">
+                    {% for step in work_steps %}
+                    <div class="workflow-card">
+                        <span class="step-num">{{ step.number }}</span>
+                        <h4 class="step-title">{{ step.title }}</h4>
+                        <p class="step-desc">{{ step.description }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================ -->
+<!-- 6B. ON-PAGE EMBEDDED QUESTIONNAIRE SECTION   -->
+<!-- ============================================ -->
+<section id="questionnaire" class="questionnaire-inline-section">
+    <div class="questionnaire-inline-container">
+        <div class="section-header text-center">
+            <div class="section-label text-cyan">/ Discovery Brief</div>
+            <h2 class="section-subheading">Branding Questionnaire.</h2>
+            <p class="questionnaire-inline-subtext">Fill out your brand details directly below without leaving the site — delivered in 48 hours.</p>
+        </div>
+
+        <div class="questionnaire-frame-card">
+            <div class="frame-card-header">
+                <div class="frame-card-dots">
+                    <span class="dot dot-red"></span>
+                    <span class="dot dot-yellow"></span>
+                    <span class="dot dot-green"></span>
+                </div>
+                <div class="frame-card-title">Diamond Design · Discovery Questionnaire</div>
+                <button type="button" class="open-form-modal frame-expand-btn">Expand Fullscreen ⛶</button>
+            </div>
+            <div class="frame-card-body">
+                <iframe src="{{ profile.embedded_form_url }}" width="100%" height="820" frameborder="0" marginheight="0" marginwidth="0">
+                    Loading questionnaire…
+                </iframe>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================ -->
+<!-- 7. SOCIAL MEDIA & POSTER GALLERY             -->
+<!-- ============================================ -->
+<section id="posters" class="posters-section">
+    <div class="posters-container">
+        <div class="posters-header-row">
+            <div>
+                <div class="section-label">/ Social Media</div>
+                <h2 class="section-subheading">Poster Designs.</h2>
+            </div>
+            <p class="posters-desc">
+                Scroll-stopping single-post and campaign creatives crafted for Instagram, Facebook, and TikTok feeds. Consistent brand voice across every touchpoint.
+            </p>
+        </div>
+
+        <div class="posters-grid">
+            {% for poster in posters %}
+            <div class="poster-card group lightbox-trigger"
+                 data-img="{% static poster.image %}"
+                 data-title="{{ poster.brand }}"
+                 data-desc="{{ poster.category }} Campaign Creative">
+                <div class="poster-image-wrap">
+                    <img src="{% static poster.image %}" alt="{{ poster.brand }} poster" loading="lazy">
+                </div>
+                <div class="poster-caption">
+                    <div class="poster-brand">{{ poster.brand }}</div>
+                    <div class="poster-category">{{ poster.category }}</div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- ============================================ -->
+<!-- 8. CONTACT & BOOKING SECTION                 -->
+<!-- ============================================ -->
+<section id="contact" class="contact-section">
+    <div class="contact-container">
+        <div class="contact-header">
+            <div class="section-label text-cyan">📩 Ready to Launch?</div>
+            <h2 class="contact-heading">Reserve your <span class="italic-gradient">branding</span> slot today.</h2>
+        </div>
+
+        <div class="contact-grid">
+            <!-- Left: Quick Direct Channels -->
+            <div class="contact-direct-card">
+                <h3 class="direct-title">Direct Inquiries</h3>
+                <p class="direct-subtext">Reach Dagim directly via WhatsApp or book using the online questionnaire.</p>
+                
+                <div class="direct-buttons">
+                    <a href="https://wa.me/{{ profile.whatsapp_number|cut:'+'|cut:' ' }}" target="_blank" rel="noopener noreferrer" class="direct-btn whatsapp-btn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13.832 16.568a1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233 14 14 0 0 0 6.392 6.384"></path></svg>
+                        <span>WhatsApp: {{ profile.whatsapp_display }}</span>
+                    </a>
+
+                    <a href="{{ profile.instagram_url }}" target="_blank" rel="noopener noreferrer" class="direct-btn insta-btn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"></line></svg>
+                        <span>Instagram: {{ profile.instagram_handle }}</span>
+                    </a>
+
+                    <button type="button" class="direct-btn form-btn open-form-modal">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                        <span>Fill 5-Min Questionnaire</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Right: Interactive Django Contact Form -->
+            <div class="contact-form-card">
+                <h3 class="form-title">Send a Direct Message</h3>
+                <form id="contact-form" class="ajax-form">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="contact-name">Your Name</label>
+                        <input type="text" id="contact-name" name="name" placeholder="Abebe Bikila" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="contact-email">Your Email</label>
+                        <input type="email" id="contact-email" name="email" placeholder="founder@company.com" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="contact-service">Service Needed</label>
+                        <select id="contact-service" name="service">
+                            <option value="48-Hour Branding Board">48-Hour Branding Board</option>
+                            <option value="Brand Identity & Logo System">Brand Identity & Logo System</option>
+                            <option value="Social Media Poster Campaign">Social Media Poster Campaign</option>
+                            <option value="Stationery & Packaging Mockups">Stationery & Packaging Mockups</option>
+                            <option value="Other Design Consultation">Other Design Consultation</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="contact-message">Project Brief / Message</label>
+                        <textarea id="contact-message" name="message" rows="4" placeholder="Tell us about your brand, industry, and timeline..." required></textarea>
+                    </div>
+
+                    <button type="submit" id="submit-btn" class="btn-pill-gradient btn-full">
+                        <span id="btn-text">Send Message</span>
+                        <span id="btn-spinner" class="spinner-hidden">● ● ●</span>
+                    </button>
+
+                    <div id="form-feedback" class="form-feedback"></div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

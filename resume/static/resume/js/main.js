@@ -1,0 +1,372 @@
+/**
+ * DAGIM — DIAMOND DESIGN PORTFOLIO INTERACTION ENGINE
+ * 3D Orbit Physics, Stacking Cards, Lightbox Modal, and Contact Form
+ */
+
+document.addEventListener('DOMContentLoaded', () => {
+    init3DOrbit();
+    initStackingCards();
+    initLightbox();
+    initContactForm();
+    initSmoothScroll();
+    initFormModal();
+});
+
+/* ==========================================================================
+   1. 3D ORBITAL STAGE WITH DRAG-TO-SPIN & INERTIA PHYSICS (Kidus Style)
+   ========================================================================== */
+function init3DOrbit() {
+    const stage = document.getElementById('orbit-stage');
+    const center = document.getElementById('orbit-center');
+    if (!stage || !center) return;
+
+    const items = Array.from(center.querySelectorAll('.orbit-item'));
+    if (items.length === 0) return;
+
+    let currentAngle = 0;
+    let velocity = 0.0035; // idle spin velocity
+    let isDragging = false;
+    let startX = 0;
+    let previousX = 0;
+    let lastDragTime = 0;
+    let dragVelocity = 0;
+    let isHovered = false;
+
+    // Radius of orbit
+    let radiusX = 320;
+    let radiusY = 140;
+
+    function updateRadii() {
+        const width = window.innerWidth;
+        if (width < 600) {
+            radiusX = 140;
+            radiusY = 70;
+        } else if (width < 1024) {
+            radiusX = 240;
+            radiusY = 100;
+        } else {
+            radiusX = 330;
+            radiusY = 130;
+        }
+    }
+
+    updateRadii();
+    window.addEventListener('resize', updateRadii);
+
+    // Distribute item initial offsets
+    const totalItems = items.length;
+    const baseAngles = items.map((_, i) => (i * 2 * Math.PI) / totalItems);
+
+    function renderOrbit() {
+        if (!isDragging) {
+            // Apply decay to dragVelocity and return to idle velocity
+            if (Math.abs(dragVelocity) > 0.0001) {
+                currentAngle += dragVelocity;
+                dragVelocity *= 0.94; // friction
+            } else if (!isHovered) {
+                currentAngle += velocity;
+            }
+        }
+
+        items.forEach((item, i) => {
+            const angle = baseAngles[i] + currentAngle;
+            const x = Math.cos(angle) * radiusX;
+            const y = Math.sin(angle) * radiusY;
+
+            // Depth calculation: sin(angle) ranges from -1 (back) to +1 (front)
+            const sinVal = Math.sin(angle);
+            const normalizedDepth = (sinVal + 1) / 2; // 0 to 1
+
+            const scale = 0.65 + normalizedDepth * 0.45; // 0.65 to 1.1
+            const zIndex = Math.round(normalizedDepth * 30) + 1;
+            const opacity = 0.35 + normalizedDepth * 0.65;
+            const blur = (1 - normalizedDepth) * 3; // blur distant items
+
+            item.style.transform = `translate3d(${x}px, ${y}px, 0) scale(${scale})`;
+            item.style.zIndex = zIndex;
+            item.style.opacity = opacity;
+            item.style.filter = `blur(${blur}px)`;
+        });
+
+        requestAnimationFrame(renderOrbit);
+    }
+
+    // Pointer events for drag-to-spin
+    stage.addEventListener('pointerdown', (e) => {
+        isDragging = true;
+        startX = e.clientX;
+        previousX = e.clientX;
+        lastDragTime = performance.now();
+        dragVelocity = 0;
+        stage.setPointerCapture(e.pointerId);
+    });
+
+    stage.addEventListener('pointermove', (e) => {
+        if (!isDragging) return;
+        const now = performance.now();
+        const deltaX = e.clientX - previousX;
+        const deltaTime = Math.max(now - lastDragTime, 16);
+
+        // Convert delta pixels to radian angle
+        const sensitivity = 0.0055;
+        currentAngle += deltaX * sensitivity;
+        dragVelocity = (deltaX / deltaTime) * 0.05;
+
+        previousX = e.clientX;
+        lastDragTime = now;
+    });
+
+    function endDrag(e) {
+        if (!isDragging) return;
+        isDragging = false;
+        try {
+            stage.releasePointerCapture(e.pointerId);
+        } catch (err) {}
+    }
+
+    stage.addEventListener('pointerup', endDrag);
+    stage.addEventListener('pointercancel', endDrag);
+
+    // Pause idle rotation when hovering an orbital item
+    items.forEach((item) => {
+        item.addEventListener('mouseenter', () => (isHovered = true));
+        item.addEventListener('mouseleave', () => (isHovered = false));
+    });
+
+    renderOrbit();
+}
+
+/* ==========================================================================
+   2. SIGNATURE STACKING CARDS SCROLL DYNAMICS
+   ========================================================================== */
+function initStackingCards() {
+    const wrappers = Array.from(document.querySelectorAll('.project-sticky-wrapper'));
+    if (wrappers.length === 0) return;
+
+    function handleScroll() {
+        if (window.innerWidth < 860) return; // relative on mobile
+
+        const viewportHeight = window.innerHeight;
+
+        wrappers.forEach((wrapper, index) => {
+            const rect = wrapper.getBoundingClientRect();
+            const card = wrapper.querySelector('.project-card');
+            if (!card) return;
+
+            // If the next wrapper starts overlapping this card
+            if (index < wrappers.length - 1) {
+                const nextWrapper = wrappers[index + 1];
+                const nextRect = nextWrapper.getBoundingClientRect();
+
+                // When next card approaches this card's top
+                const overlap = rect.top - nextRect.top;
+                if (nextRect.top < viewportHeight) {
+                    const progress = Math.max(0, Math.min(1, (viewportHeight - nextRect.top) / viewportHeight));
+                    // Subtle scale down of the card beneath
+                    const scale = 1 - progress * 0.04;
+                    const brightness = 1 - progress * 0.15;
+                    card.style.transform = `scale(${scale})`;
+                    card.style.filter = `brightness(${brightness})`;
+                } else {
+                    card.style.transform = 'scale(1)';
+                    card.style.filter = 'brightness(1)';
+                }
+            }
+        });
+    }
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+}
+
+/* ==========================================================================
+   3. INTERACTIVE IMAGE LIGHTBOX MODAL
+   ========================================================================== */
+function initLightbox() {
+    const modal = document.getElementById('lightbox-modal');
+    const imgEl = document.getElementById('lightbox-img');
+    const titleEl = document.getElementById('lightbox-title');
+    const descEl = document.getElementById('lightbox-desc');
+    const closeBtn = document.getElementById('lightbox-close');
+    const backdrop = modal ? modal.querySelector('.lightbox-backdrop') : null;
+
+    if (!modal || !imgEl) return;
+
+    function openLightbox(src, title, desc) {
+        imgEl.src = src;
+        imgEl.alt = title || 'Enlarged design';
+        titleEl.textContent = title || '';
+        descEl.textContent = desc || '';
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeLightbox() {
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+        setTimeout(() => {
+            imgEl.src = '';
+        }, 200);
+    }
+
+    document.querySelectorAll('.lightbox-trigger').forEach((trigger) => {
+        trigger.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const src = trigger.dataset.img || trigger.querySelector('img')?.src;
+            const title = trigger.dataset.title || '';
+            const desc = trigger.dataset.desc || '';
+            if (src) {
+                openLightbox(src, title, desc);
+            }
+        });
+    });
+
+    if (closeBtn) closeBtn.addEventListener('click', closeLightbox);
+    if (backdrop) backdrop.addEventListener('click', closeLightbox);
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal.classList.contains('active')) {
+            closeLightbox();
+        }
+    });
+}
+
+/* ==========================================================================
+   4. AJAX CONTACT FORM
+   ========================================================================== */
+function initContactForm() {
+    const form = document.getElementById('contact-form');
+    if (!form) return;
+
+    const feedback = document.getElementById('form-feedback');
+    const submitBtn = document.getElementById('submit-btn');
+    const btnText = document.getElementById('btn-text');
+    const btnSpinner = document.getElementById('btn-spinner');
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        // Get CSRF token
+        const csrfToken = form.querySelector('[name=csrfmiddlewaretoken]')?.value;
+
+        const formData = {
+            name: form.querySelector('#contact-name').value.trim(),
+            email: form.querySelector('#contact-email').value.trim(),
+            service: form.querySelector('#contact-service').value,
+            message: form.querySelector('#contact-message').value.trim(),
+        };
+
+        if (!formData.name || !formData.email || !formData.message) {
+            showFeedback('Please fill in all required fields.', 'error');
+            return;
+        }
+
+        // Loading state
+        submitBtn.disabled = true;
+        btnText.style.display = 'none';
+        btnSpinner.style.display = 'inline-block';
+        feedback.style.display = 'none';
+
+        try {
+            const response = await fetch('/contact/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken,
+                },
+                body: JSON.stringify(formData),
+            });
+
+            const result = await response.json();
+
+            if (response.ok && result.status === 'success') {
+                showFeedback(result.message, 'success');
+                form.reset();
+            } else {
+                showFeedback(result.message || 'Something went wrong. Please try again.', 'error');
+            }
+        } catch (error) {
+            showFeedback('Network error. You can also message Dagim directly on WhatsApp!', 'error');
+        } finally {
+            submitBtn.disabled = false;
+            btnText.style.display = 'inline-block';
+            btnSpinner.style.display = 'none';
+        }
+    });
+
+    function showFeedback(msg, type) {
+        feedback.textContent = msg;
+        feedback.className = `form-feedback ${type}`;
+        feedback.style.display = 'block';
+    }
+}
+
+/* ==========================================================================
+   5. SMOOTH SCROLL & BACK TO TOP
+   ========================================================================== */
+function initSmoothScroll() {
+    const backToTopBtn = document.getElementById('back-to-top');
+    if (backToTopBtn) {
+        backToTopBtn.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    }
+
+    // Smooth scroll offset for fixed header
+    document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+        anchor.addEventListener('click', function (e) {
+            const href = this.getAttribute('href');
+            if (href === '#' || !href.startsWith('#')) return;
+
+            const target = document.querySelector(href);
+            if (target) {
+                e.preventDefault();
+                const headerOffset = 70;
+                const elementPosition = target.getBoundingClientRect().top;
+                const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+                window.scrollTo({
+                    top: offsetPosition,
+                    behavior: 'smooth',
+                });
+            }
+        });
+    });
+}
+
+/* ==========================================================================
+   6. EMBEDDED GOOGLE FORM MODAL
+   ========================================================================== */
+function initFormModal() {
+    const modal = document.getElementById('form-modal');
+    const closeBtn = document.getElementById('form-modal-close');
+    const backdrop = modal ? modal.querySelector('.form-modal-backdrop') : null;
+    if (!modal) return;
+
+    function openModal() {
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    document.querySelectorAll('.open-form-modal').forEach((btn) => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            openModal();
+        });
+    });
+
+    if (closeBtn) closeBtn.addEventListener('click', closeModal);
+    if (backdrop) backdrop.addEventListener('click', closeModal);
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal.classList.contains('active')) {
+            closeModal();
+        }
+    });
+}
+
