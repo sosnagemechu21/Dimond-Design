@@ -27,41 +27,6 @@ A modern, high-converting resume and portfolio web application built for **Dagim
   - Direct WhatsApp chat link, Instagram handle, and asynchronous Django contact form.
   - Fully manageable through the Django Admin dashboard.
 
----
-
-## 🚀 Quick Start
-
-### 1. Clone & Set Up Virtual Environment
-```bash
-git clone https://github.com/sosnagemechu21/Dimond-Design.git
-cd Dimond-Design
-
-python -m venv venv
-# On Windows:
-venv\Scripts\activate
-# On Linux/macOS:
-source venv/bin/activate
-```
-
-### 2. Install Dependencies
-```bash
-pip install -r requirements.txt
-```
-
-### 3. Run Migrations & Seed Portfolio
-```bash
-python manage.py migrate
-python manage.py seed_portfolio
-```
-
-### 4. Start Development Server
-```bash
-python manage.py runserver
-```
-
-Open [http://127.0.0.1:8000/](http://127.0.0.1:8000/) in your browser!
-
----
 
 ## 🛠 Tech Stack
 
