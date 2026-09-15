@@ -4,7 +4,7 @@ A modern, high-converting resume and portfolio web application built for **Dagim
 
 ![Diamond Design Portfolio]
 
-## ✨ Features
+##  Features
 
 - **Hero Section & 3D Interactive Orbit Physics**:
   - Dark luxury theme (`#0C0C0C`) with slate charcoal and metallic silver ambient tones.
